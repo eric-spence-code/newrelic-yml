@@ -34,5 +34,7 @@ func main() {
 
 	output := templating.Inject(testDataYaml, "dev", variables.Variables)
 
-	fmt.Print(output)
+	newrelicObj := parser.Parse(output)
+	
+	fmt.Print(newrelicObj)
 }
