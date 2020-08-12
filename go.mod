@@ -1,4 +1,4 @@
-module example.com/internal
+module github.com/eric-spence-code/newrelic-yml
 
 go 1.14
 
@@ -7,3 +7,4 @@ require (
 	github.com/newrelic/newrelic-client-go v0.35.1
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )
+

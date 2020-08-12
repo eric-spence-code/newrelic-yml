@@ -12,15 +12,28 @@ type PolicyCondition struct {
 }
 
 type NewRelicYaml struct {
-	Variables map[string](map[string]interface{}) `json:"variables"`
-	Policies  []PolicyCondition                   `json:"policies"`
-	Dashboard []dashboards.Dashboard              `json:"dashboard"`
+	Policies  []PolicyCondition      `json:"policies"`
+	Dashboard []dashboards.Dashboard `json:"dashboard"`
 }
 
+type VariablesYml struct {
+	Variables map[string](map[string]interface{}) `json:"variables"`
+}
+
+// Parse -- Parse out Newrelic data
 func Parse(data string) (newRelicYaml NewRelicYaml) {
 	err := yaml.Unmarshal([]byte(data), &newRelicYaml)
 	if err != nil {
 		panic(err)
 	}
 	return newRelicYaml
+}
+
+// ParseVariables -- Parse variables out
+func ParseVariables(data string) (variables VariablesYml) {
+	err := yaml.Unmarshal([]byte(data), &variables)
+	if err != nil {
+		panic(err)
+	}
+	return variables
 }
