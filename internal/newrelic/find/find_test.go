@@ -1,19 +1,49 @@
 package find
 
-import (-
-	"fmt"
+import (
 	"testing"
+
 	"github.com/newrelic/newrelic-client-go/pkg/alerts"
-	mock "github.com/newrelic/newrelic-client-go/pkg/testhelpers"
 )
 
-func newMockResponse(t *testing.T, mockJSONResponse string, statusCode int) alerts.Alerts {
-	ts := mock.NewMockServer(t, mockJSONResponse, statusCode)
-	tc := mock.NewTestConfig(t, ts)
-
-	return alerts.New(tc)
+type MockClient struct {
+	response []alerts.Policy
 }
 
-func TestPolicy(t *testing.T) {
-	fmt.Print("hit")
+func (mc *MockClient) ListPolicies(*alerts.ListPoliciesParams) ([]alerts.Policy, error) {
+	return mc.response, nil
+}
+
+func TestPolicyFound(t *testing.T) {
+	policy := alerts.Policy{
+		ID:   1234,
+		Name: "test-alert-policy-1",
+	}
+	policies := []alerts.Policy{policy}
+
+	client := MockClient{
+		response: policies,
+	}
+
+	find := New(&client)
+
+	response := find.Policy("test-alert-policy-1")
+	if response == nil {
+		t.Errorf("Did not find alert policy")
+	}
+}
+
+func TestPolicyNotFound(t *testing.T) {
+	policies := []alerts.Policy{}
+
+	client := MockClient{
+		response: policies,
+	}
+
+	find := New(&client)
+
+	response := find.Policy("test-alert-policy-1")
+	if response != nil {
+		t.Errorf("Found an policy when it should not have")
+	}
 }

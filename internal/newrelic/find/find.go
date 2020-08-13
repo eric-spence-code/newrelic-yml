@@ -17,12 +17,22 @@ func getClient() (*newrelic.NewRelic) {
 
 	return client
 }
+ 
+type Client interface {
+	ListPolicies(*alerts.ListPoliciesParams) ([]alerts.Policy, error)
+}
+
+type Find struct {
+	client Client
+}
+
+func New(client Client) Find {
+	return Find{client}
+}
 
 // Dashboard -- Search for policy
 func Dashboard(name string) (*dashboards.Dashboard) {
-	client := getClient()
-
-	dashList, err := client.Dashboards.ListDashboards(&dashboards.ListDashboardsParams {
+	dashList, err := getClient().Dashboards.ListDashboards(&dashboards.ListDashboardsParams {
 		Title: name,
 	})
 
@@ -40,10 +50,8 @@ func Dashboard(name string) (*dashboards.Dashboard) {
 
 
 // Policy -- Search for policy
-func Policy(name string) (*alerts.Policy) {
-	client := getClient()
-
-	policyList, err := client.Alerts.ListPolicies(&alerts.ListPoliciesParams {
+func (f *Find) Policy(name string) (*alerts.Policy) {
+	policyList, err := f.client.ListPolicies(&alerts.ListPoliciesParams {
 		Name: name,
 	})
 
