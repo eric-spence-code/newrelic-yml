@@ -1,4 +1,4 @@
-package find
+package newrelic
 
 import (
 	"testing"
@@ -14,6 +14,13 @@ func (mc *MockClient) ListPolicies(*alerts.ListPoliciesParams) ([]alerts.Policy,
 	return mc.response, nil
 }
 
+func (mc *MockClient) CreatePolicy(alerts.Policy) (*alerts.Policy, error) {
+	return &mc.response[0], nil
+}
+func (mc *MockClient) UpdatePolicy(alerts.Policy) (*alerts.Policy, error) {
+	return &mc.response[0], nil
+}
+
 func TestPolicyFound(t *testing.T) {
 	policy := alerts.Policy{
 		ID:   1234,
@@ -25,9 +32,10 @@ func TestPolicyFound(t *testing.T) {
 		response: policies,
 	}
 
-	find := New(&client)
+	alertsWrapper := NewAlerts(&client)
 
-	response := find.Policy("test-alert-policy-1")
+	response, _ := alertsWrapper.Find("test-alert-policy-1")
+
 	if response == nil {
 		t.Errorf("Did not find alert policy")
 	}
@@ -40,9 +48,9 @@ func TestPolicyNotFound(t *testing.T) {
 		response: policies,
 	}
 
-	find := New(&client)
+	alertsWrapper := NewAlerts(&client)
 
-	response := find.Policy("test-alert-policy-1")
+	response, _ := alertsWrapper.Find("test-alert-policy-1")
 	if response != nil {
 		t.Errorf("Found an policy when it should not have")
 	}
